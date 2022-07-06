@@ -22,7 +22,7 @@ export default class CApp extends PThree {
       flatShading: true,
     });
     this.mesh = new THREE.Mesh(geo, mat)
-    this.initialDir = new THREE.Vector3(0.0, 0.0, 0.0)
+    this.initialDir = new THREE.Vector3(0.0, 1.0, 0.0).normalize()
     this.mesh.position.set(0, 0, 0)
     this.scene.add(this.mesh)
   }
@@ -36,46 +36,45 @@ export default class CApp extends PThree {
 
     const dx = this.mouse.x - this.now.x;
     const dy = this.mouse.y - this.now.y;
-    const distance = Math.sqrt(dx * dx + dy * dy) / 100;
+    const distance = Math.sqrt(dx * dx + dy * dy) / 200;
     this.mesh.position.set(this.now.x, this.now.y);
 
     if(distance < 0.001) return
 
-    // //=========
-    // const vecX = new THREE.Vector3(this.now.x, 0.0, 1.0).normalize();
-    // const vecY = new THREE.Vector3(0.0, this.now.y, 1.0).normalize();
-    // const _tangent = new THREE.Vector3().crossVectors(vecX, vecY);
-    // _tangent.normalize()
+    //=========
 
+    // const startVec = this.initialDir.clone()
 
-    const nowDir = new THREE.Vector3(this.now.x, this.now.y, 1.0).normalize();
-    const targetDir = new THREE.Vector3(
+    const nowVec = new THREE.Vector3(this.now.x, this.now.y, 0.0).normalize();
+    const targetVec = new THREE.Vector3(
       this.mouse.x,
       this.mouse.y,
-      1.0
+      0.0
     ).normalize();
-    const tangent = new THREE.Vector3().crossVectors(nowDir, targetDir);
-    tangent.normalize();
-    console.log(tangent);
 
-    const cos = nowDir.dot(targetDir);
+    const subVec = new THREE.Vector3().subVectors(targetVec, nowVec);
+    subVec.normalize()
+    console.log(subVec);
 
-    const radians = Math.acos(cos);
+    // const verticalVector = new THREE.Vector3(
+    //   subVec.y,
+    //   -subVec.x,
+    //   0.0
+    // ).normalize();
+
+    // const normal = new THREE.Vector3().crossVectors(nowVec, targetVec);
+    // normal.normalize();
+
+    // const cos = nowVec.dot(targetVec);
+
+    // const radians = Math.acos(cos);
 
     const qtn = new THREE.Quaternion()
-      .setFromAxisAngle(tangent, -distance)
+      .setFromAxisAngle(subVec, distance)
       .normalize();
     this.mesh.quaternion.premultiply(qtn);
 
     //=========
-
-    if (dx > 0) {
-    } else {
-    }
-
-    if (dy < 0) {
-    } else {
-    }
   }
 
   onResize() {
