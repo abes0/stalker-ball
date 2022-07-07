@@ -36,41 +36,28 @@ export default class CApp extends PThree {
 
     const dx = this.mouse.x - this.now.x;
     const dy = this.mouse.y - this.now.y;
-    const distance = Math.sqrt(dx * dx + dy * dy) / 200;
+    const distance = Math.sqrt(dx * dx + dy * dy) / (30 * 2 * Math.PI * 1.5);
     this.mesh.position.set(this.now.x, this.now.y);
 
-    if(distance < 0.001) return
+    if (distance < 0.001) return;
 
     //=========
+    // Quaternionの処理
 
-    // const startVec = this.initialDir.clone()
+    const nowPoint = new THREE.Vector3(this.now.x, this.now.y, 0.0);
+    const targetPoint = new THREE.Vector3(this.mouse.x, this.mouse.y, 0.0);
 
-    const nowVec = new THREE.Vector3(this.now.x, this.now.y, 0.0).normalize();
-    const targetVec = new THREE.Vector3(
-      this.mouse.x,
-      this.mouse.y,
-      0.0
-    ).normalize();
+    const subVec = new THREE.Vector3().subVectors(targetPoint, nowPoint);
 
-    const subVec = new THREE.Vector3().subVectors(targetVec, nowVec);
-    subVec.normalize()
-    console.log(subVec);
-
-    // const verticalVector = new THREE.Vector3(
-    //   subVec.y,
-    //   -subVec.x,
-    //   0.0
-    // ).normalize();
-
-    // const normal = new THREE.Vector3().crossVectors(nowVec, targetVec);
-    // normal.normalize();
-
-    // const cos = nowVec.dot(targetVec);
-
-    // const radians = Math.acos(cos);
+    const axisVec = new THREE.Vector3().crossVectors(
+      subVec,
+      new THREE.Vector3(0, 0, 1)
+    );
+    axisVec.normalize();
+    axisVec.negate();
 
     const qtn = new THREE.Quaternion()
-      .setFromAxisAngle(subVec, distance)
+      .setFromAxisAngle(axisVec, distance)
       .normalize();
     this.mesh.quaternion.premultiply(qtn);
 
