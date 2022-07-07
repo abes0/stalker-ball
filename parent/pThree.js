@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { OrbitControls } from "three/examples/jsm/controls/orbitControls"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 
 export default class PThree {
   sw = window.innerWidth;
